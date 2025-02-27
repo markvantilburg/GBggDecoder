@@ -25,7 +25,7 @@
                 formatted.Address = formatted.Address.PadLeft(length, '0').ToUpper();
             }
 
-            if (code.Compare != 0)
+            if (code.Compare != null)
             {
                 formatted.Compare = formatted.Compare.PadLeft(2, '0').ToUpper();
             }
@@ -98,7 +98,7 @@
         {
             public int Address { get; set; }
             public int Value { get; set; }
-            public int? Compare { get; set; }
+            public int? Compare { get; set; } = null;
         }
 
         public class FormattedCode

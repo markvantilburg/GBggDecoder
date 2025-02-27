@@ -1,7 +1,7 @@
 ﻿using GBggDecoder;
 
 Console.WriteLine("Convert game boy Game Genie Code to rom location/patch data:");
-Console.WriteLine("Enter Game Genie Code (e.g., 09D-49C-E62):");
+Console.WriteLine("Enter Game Genie Code (e.g., 09D-49C-E62 or 6D8-36F):");
 string code = Console.ReadLine();
 if (GBGameGenieHandler.IsValidGBGGCode(code))
 {
