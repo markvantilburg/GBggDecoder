@@ -1,4 +1,18 @@
-﻿namespace GBggDecoder
+/*
+This is based on GPL code, but MIT is allowed by the original author:
+-> https://games.technoplaza.net/ggencoder/js/
+- Copyright (C) 2004-2006, 2008, 2016 emuWorks (http://games.technoplaza.net/)
+- This work is licensed under the GNU General Public License v2.
+
+John Ratliff <**********>
+Tue, Apr 1, 4:56 PM
+to me
+I'm fine if you want to include your port in an MIT licensed project
+so long as you reference the original.
+--John
+*/
+
+namespace GBggDecoder
 {
     public class GBGameGenieHandler
     {
