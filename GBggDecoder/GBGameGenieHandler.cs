@@ -51,9 +51,9 @@ namespace GBggDecoder
         {
             var rawCode = new RawCode();
 
+            code = code.ToUpper();
             if (IsValidGBGGCode(code))
             {
-                code = code.ToUpper();
                 var hex = new int[9];
 
                 int hexIndex = 0;
@@ -83,8 +83,6 @@ namespace GBggDecoder
 
         public static bool IsValidGBGGCode(string code)
         {
-            code = code.ToUpper();
-
             // GBGG codes are either 7 or 11 characters
             if (code.Length != 7 && code.Length != 11)
             {
