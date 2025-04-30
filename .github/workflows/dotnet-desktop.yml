@@ -41,8 +41,6 @@ name: .NET Core Desktop
 on:
   push:
     branches: [ "main" ]
-  pull_request:
-    branches: [ "main" ]
 
 jobs:
 
@@ -52,14 +50,10 @@ jobs:
       matrix:
         configuration: [Release]
 
-    runs-on: windows-latest  # For a list of available runner types, refer to
-                             # https://help.github.com/en/actions/reference/workflow-syntax-for-github-actions#jobsjob_idruns-on
+    runs-on: windows-latest
 
     env:
-      Solution_Name: GBggDecoder.sln                         # Replace with your solution name, i.e. MyWpfApp.sln.
-      Test_Project_Path: your-test-project-path                 # Replace with the path to your test project, i.e. MyWpfApp.Tests\MyWpfApp.Tests.csproj.
-      Wap_Project_Directory: your-wap-project-directory-name    # Replace with the Wap project directory relative to the solution, i.e. MyWpfApp.Package.
-      Wap_Project_Path: your-wap-project-path                   # Replace with the path to your Wap project, i.e. MyWpf.App.Package\MyWpfApp.Package.wapproj.
+      Solution_Name: GBggDecoder.sln
 
     steps:
     - name: Checkout
@@ -67,34 +61,36 @@ jobs:
       with:
         fetch-depth: 0
 
-    # Install the .NET Core workload
+    # Install .NET Core
     - name: Install .NET Core
       uses: actions/setup-dotnet@v4
       with:
         dotnet-version: 9.0.x
 
-    # Add  MSBuild to the PATH: https://github.com/microsoft/setup-msbuild
-    - name: Setup MSBuild.exe
-      uses: microsoft/setup-msbuild@v2
+    # Restore dependencies
+    - name: Restore dependencies
+      run: dotnet restore $env:Solution_Name
 
-# DISABLED TESTS, THERE ARE NONE (YET)
-#    # Execute all unit tests in the solution
-#    - name: Execute unit tests
-#      run: dotnet test
+    # Build and publish
+    - name: Publish Native AOT
+      run: dotnet publish ./GBggDecoder/GBggDecoder.csproj -c Release -r win-x64 --no-restore /p:PublishAot=true
 
-    # Restore the application to populate the obj folder with RuntimeIdentifiers
-    - name: Restore the application
-      run: msbuild $env:Solution_Name /t:Restore /p:Configuration=$env:Configuration
-      env:
-        Configuration: ${{ matrix.configuration }}
-
-    - name: Publish
-      run: dotnet publish -r win-x64 -c Release /p:PublishSingleFile=true -o publish
-
- # Upload the published app as an artifact
+    # Upload the published app as artifact
     - name: Upload artifact
       uses: actions/upload-artifact@v4
       with:
-        name: GBggDecoder-win-x64
+        name: GBggDecoder-win-x64-native
         path: ./GBggDecoder/bin/Release/net9.0/win-x64/publish/GBggDecoder.exe
         if-no-files-found: error
+
+    # Create GitHub Release
+    - name: Create Release
+      if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      run: |
+        $tag = "v" + (Get-Date -Format "yyyy.MM.dd.HHmm")
+        $source = "./GBggDecoder/bin/Release/net9.0/win-x64/publish/GBggDecoder.exe"
+        $dest = "GBggDecoder-$tag.exe"
+        Copy-Item $source $dest
+        gh release create $tag $dest --title "Release $tag" --generate-notes
