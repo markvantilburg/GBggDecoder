@@ -1,5 +1,5 @@
 # GBggDecoder
-
+[![.NET Core Desktop](https://github.com/markvantilburg/GBggDecoder/actions/workflows/dotnet-desktop.yml/badge.svg)](https://github.com/markvantilburg/GBggDecoder/actions/workflows/dotnet-desktop.yml)
 run: GBggDecoder.exe
 
 Decode GameGenie GB values to patchable values
