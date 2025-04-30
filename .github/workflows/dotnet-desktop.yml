@@ -52,7 +52,7 @@ jobs:
       matrix:
         configuration: [Release]
 
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
 
     env:
       Solution_Name: GBggDecoder.sln
@@ -63,12 +63,6 @@ jobs:
       with:
         fetch-depth: 0
 
-    # Install Native AOT prerequisites
-    - name: Install Native AOT dependencies
-      run: |
-        sudo apt-get update
-        sudo apt-get install -y clang zlib1g-dev
-
     # Install .NET Core
     - name: Install .NET Core
       uses: actions/setup-dotnet@v4
@@ -77,19 +71,16 @@ jobs:
 
     # Restore dependencies
     - name: Restore dependencies
-      run: dotnet restore $SOLUTION_NAME
+      run: dotnet restore $env:Solution_Name
 
-    - name: Build
-      run: dotnet build $SOLUTION_NAME --configuration ${{ matrix.configuration }} --no-restore
-
-    # publish
+    # Build and publish
     - name: Publish Native AOT
-      run: dotnet publish ./GBggDecoder/GBggDecoder.csproj -c Release -r linux-x64 --no-restore /p:PublishAot=true
+      run: dotnet publish ./GBggDecoder/GBggDecoder.csproj -c Release -r win-x64 --no-restore /p:PublishAot=true
 
     # Upload the published app as artifact
     - name: Upload artifact
       uses: actions/upload-artifact@v4
       with:
-        name: GBggDecoder-linux-x64-native
-        path: ./GBggDecoder/bin/Release/net9.0/linux-x64/publish/GBggDecoder
+        name: GBggDecoder-win-x64-native
+        path: ./GBggDecoder/bin/Release/net9.0/win-x64/publish/GBggDecoder.exe
         if-no-files-found: error
