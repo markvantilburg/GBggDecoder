@@ -84,3 +84,15 @@ jobs:
         name: GBggDecoder-win-x64-native
         path: ./GBggDecoder/bin/Release/net9.0/win-x64/publish/GBggDecoder.exe
         if-no-files-found: error
+
+    # Create GitHub Release
+    - name: Create Release
+      if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      run: |
+        $tag = "v" + (Get-Date -Format "yyyy.MM.dd.HHmm")
+        $source = "./GBggDecoder/bin/Release/net9.0/win-x64/publish/GBggDecoder.exe"
+        $dest = "GBggDecoder-$tag.exe"
+        Copy-Item $source $dest
+        gh release create $tag $dest --title "Release $tag" --generate-notes
