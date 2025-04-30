@@ -52,14 +52,10 @@ jobs:
       matrix:
         configuration: [Release]
 
-    runs-on: windows-latest  # For a list of available runner types, refer to
-                             # https://help.github.com/en/actions/reference/workflow-syntax-for-github-actions#jobsjob_idruns-on
+    runs-on: ubuntu-latest
 
     env:
-      Solution_Name: GBggDecoder.sln                         # Replace with your solution name, i.e. MyWpfApp.sln.
-      Test_Project_Path: your-test-project-path                 # Replace with the path to your test project, i.e. MyWpfApp.Tests\MyWpfApp.Tests.csproj.
-      Wap_Project_Directory: your-wap-project-directory-name    # Replace with the Wap project directory relative to the solution, i.e. MyWpfApp.Package.
-      Wap_Project_Path: your-wap-project-path                   # Replace with the path to your Wap project, i.e. MyWpf.App.Package\MyWpfApp.Package.wapproj.
+      Solution_Name: GBggDecoder.sln
 
     steps:
     - name: Checkout
@@ -67,7 +63,13 @@ jobs:
       with:
         fetch-depth: 0
 
-    # Install the .NET Core workload
+    # Install Native AOT prerequisites
+    - name: Install Native AOT dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y clang zlib1g-dev
+
+    # Install .NET Core
     - name: Install .NET Core
       uses: actions/setup-dotnet@v4
       with:
@@ -75,20 +77,19 @@ jobs:
 
     # Restore dependencies
     - name: Restore dependencies
-      run: dotnet restore $env:Solution_Name
+      run: dotnet restore $SOLUTION_NAME
 
-    # Build the application
     - name: Build
-      run: dotnet build --configuration Release --no-restore $env:Solution_Name
+      run: dotnet build $SOLUTION_NAME --configuration ${{ matrix.configuration }} --no-restore
 
-    # Publish Native AOT
+    # publish
     - name: Publish Native AOT
-      run: dotnet publish ./GBggDecoder/GBggDecoder.csproj -c Release -r win-x64 --no-restore /p:PublishAot=true
+      run: dotnet publish ./GBggDecoder/GBggDecoder.csproj -c Release -r linux-x64 --no-restore /p:PublishAot=true
 
-    # Upload the published app as an artifact
+    # Upload the published app as artifact
     - name: Upload artifact
       uses: actions/upload-artifact@v4
       with:
-        name: GBggDecoder-win-x64-native
-        path: ./GBggDecoder/bin/Release/net9.0/win-x64/publish/GBggDecoder.exe
+        name: GBggDecoder-linux-x64-native
+        path: ./GBggDecoder/bin/Release/net9.0/linux-x64/publish/GBggDecoder
         if-no-files-found: error
