@@ -29,14 +29,12 @@ namespace GBggDecoder
 
             if (code.Value != 0)
             {
-                int length = 2;
-                formatted.Value = formatted.Value.PadLeft(length, '0').ToUpper();
+                formatted.Value = formatted.Value.PadLeft(2, '0').ToUpper();
             }
 
             if (code.Address != 0)
             {
-                int length = 4;
-                formatted.Address = formatted.Address.PadLeft(length, '0').ToUpper();
+                formatted.Address = formatted.Address.PadLeft(4, '0').ToUpper();
             }
 
             if (code.Compare != null)
