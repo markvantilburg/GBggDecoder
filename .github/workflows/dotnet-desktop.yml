@@ -73,17 +73,22 @@ jobs:
       with:
         dotnet-version: 9.0.x
 
-    # Add  MSBuild to the PATH: https://github.com/microsoft/setup-msbuild
-    - name: Setup MSBuild.exe
-      uses: microsoft/setup-msbuild@v2
+    # Restore dependencies
+    - name: Restore dependencies
+      run: dotnet restore $env:Solution_Name
 
-# DISABLED TESTS, THERE ARE NONE (YET)
-#    # Execute all unit tests in the solution
-#    - name: Execute unit tests
-#      run: dotnet test
+    # Build the application
+    - name: Build
+      run: dotnet build --configuration Release --no-restore $env:Solution_Name
 
-    # Restore the application to populate the obj folder with RuntimeIdentifiers
-    - name: Restore the application
-      run: msbuild $env:Solution_Name /t:Restore /p:Configuration=$env:Configuration
-      env:
-        Configuration: ${{ matrix.configuration }}
+    # Publish Native AOT
+    - name: Publish Native AOT
+      run: dotnet publish ./GBggDecoder/GBggDecoder.csproj -c Release -r win-x64 --no-restore /p:PublishAot=true
+
+    # Upload the published app as an artifact
+    - name: Upload artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: GBggDecoder-win-x64-native
+        path: ./GBggDecoder/bin/Release/net9.0/win-x64/publish/GBggDecoder.exe
+        if-no-files-found: error
