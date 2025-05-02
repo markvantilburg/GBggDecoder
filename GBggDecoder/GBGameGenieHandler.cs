@@ -22,25 +22,10 @@ namespace GBggDecoder
         {
             var formatted = new FormattedCode
             {
-                Value = code.Value.ToString("X"),
-                Address = code.Address.ToString("X"),
-                Compare = code.Compare?.ToString("X") ?? string.Empty
+                Value = code.Value.ToString("X2"),
+                Address = code.Address.ToString("X4"),
+                Compare = code.Compare?.ToString("X2") ?? string.Empty
             };
-
-            if (code.Value != 0)
-            {
-                formatted.Value = formatted.Value.PadLeft(2, '0').ToUpper();
-            }
-
-            if (code.Address != 0)
-            {
-                formatted.Address = formatted.Address.PadLeft(4, '0').ToUpper();
-            }
-
-            if (code.Compare != null)
-            {
-                formatted.Compare = formatted.Compare.PadLeft(2, '0').ToUpper();
-            }
 
             return formatted;
         }
