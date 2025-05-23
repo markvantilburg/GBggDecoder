@@ -37,3 +37,14 @@ else
    }
  * 
  */
+
+/*
+//Get the gamename from a rom dump
+using (FileStream fs = new FileStream("C:\\temp\\123.gb", FileMode.Open, FileAccess.Read))
+using (BinaryReader reader = new(fs))
+{
+    byte[] gbrom = reader.ReadBytes((int)reader.BaseStream.Length);
+    string title = new GBRomHandler().GetTitle(gbrom);
+    Console.WriteLine(title);
+}
+*/
