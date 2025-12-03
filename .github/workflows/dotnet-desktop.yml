@@ -73,7 +73,7 @@ jobs:
 
     # Build and publish
     - name: Publish Native AOT
-      run: dotnet publish ./GBggDecoder/GBggDecoder.csproj -c Release -r win-x64 --no-restore /p:PublishAot=true
+      run: dotnet publish ./GBggDecoder/GBggDecoder.csproj -c Release -r win-x64 /p:PublishAot=true
 
     # Upload the published app as artifact
     - name: Upload artifact
